@@ -364,7 +364,7 @@
         $cartBadge.text(ProductManager.getTotalQuantity());
         $("#" + idCartModal).modal("hide");
       }
-      alert("Order made successfully");
+      alert("Order made successfully\n\nIf you have any questions/modifcations for your order\nPlease contact us via email admin@projectclimb.com\nor telephone number 01473######");
     });
 
     $(document).on('click', targetSelector, function () {

@@ -30,7 +30,7 @@
   session_start();
   session_regenerate_id();
   ini_set('display_errors', 1);
-  // ini_set('display_startup_errors', 1);
+  ini_set('display_startup_errors', 1);
   error_reporting(E_ALL & ~E_NOTICE);
 
   require_once('includes/autoloader.php');
@@ -85,6 +85,9 @@
             </form>
           </li>
           <li class="nav-item">
+            <button id="storeOrdersBtn" style="display: none; margin-top:10px;" class="btn btn-primary storeOrdersBtn" href="#">Orders</button>
+          </li>
+          <li class="nav-item">
             <button id="storeLoginBtn" style="margin-top:10px;" class="btn btn-primary storeLoginBtn" href="#">Back to store</button>
           </li>
         </ul>
@@ -129,10 +132,16 @@
           console.log("Register failed, showing container");
         </script>
         <?php
+        echo $error;
         echo "<style>.credentialsContainer{display:block;}</style>";
       } else {
         //register
-        $attempt = $User->createUser($_POST);
+        try {
+          $attempt = $User->createUser($_POST);
+        } catch (PDOException $e) {
+          $error = "User already exists in database.";
+        }
+
 
         if ($attempt) {
           $success = "Account has been created. Please login.";
@@ -170,10 +179,13 @@
       } else {
         //login
         $user_data = $User->loginUser($_POST);
+        // $current_user = $_POST['email'];
+        $_SESSION['current_user'] = $_POST['email'];
 
         if ($user_data) {
           $_SESSION['is_logged_in'] = true;
           $_SESSION['user_data'] = $user_data;
+
 
           $success = "Logged in successfully.";
 
@@ -188,7 +200,15 @@
 
   ?>
 
+  <!-- <script type="text/javascript">
+    var current_user = "?php echo $current_user ?>";
+    console.log(current_user);
+  </script> -->
+
   <script>
+    var current_user = "<?php echo $_SESSION['current_user']; ?>";
+    console.log(current_user);
+    localStorage.setItem("current_user", current_user);
     // getUserState resets formID localStorage, while setting whether user is currently loggedIn.
     // localStorage used alongside PHP due to PHP only being run on page load, making passing of variables difficult.
     function getUserState() {
